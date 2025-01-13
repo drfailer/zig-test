@@ -93,9 +93,12 @@ pub fn List(comptime T: type, comptime pool_size: usize) type {
             var curr_idx: usize = 0;
 
             while (curr.*) |c| {
-                if (curr_idx == idx) break;
+                if (curr_idx >= idx) break;
                 curr = &c.next;
                 curr_idx += 1;
+            }
+            if (curr_idx < idx) {
+                return ListError.IndexOutOfBound;
             }
             curr.* = try pool.allocate(value, curr.*);
         }
