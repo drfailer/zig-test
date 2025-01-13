@@ -73,7 +73,6 @@ pub fn List(comptime T: type, comptime pool_size: usize) type {
         var pool = NodePool(T, pool_size){};
 
         pub fn init() void {
-            std.debug.print("init list\n", .{});
             Self.pool.init();
         }
         pub fn deinit() !void {}
@@ -129,4 +128,36 @@ pub fn List(comptime T: type, comptime pool_size: usize) type {
             std.debug.print("]\n", .{});
         }
     };
+}
+
+test "test list" {
+    const ListInt = List(i32, 100);
+    ListInt.init();
+    var l1 = ListInt{};
+    var l2 = ListInt{};
+
+    try std.testing.expect(l1.head == null);
+    try std.testing.expect(l2.head == null);
+
+    try l1.append(1);
+    try l1.append(2);
+    try l1.append(3);
+
+    try std.testing.expect(l1.head.?.value == 1);
+    try std.testing.expect(l1.head.?.next.?.value == 2);
+    try std.testing.expect(l1.head.?.next.?.next.?.value == 3);
+
+    try l1.insert(0, 0);
+    try l1.insert(-1, 2);
+
+    try std.testing.expect(l1.head.?.value == 0);
+    try std.testing.expect(l1.head.?.next.?.next.?.value == -1);
+
+    try l1.prepend(10);
+    try std.testing.expect(l1.head.?.value == 10);
+
+    try l2.append(4);
+    try std.testing.expect(l2.head.?.value == 4);
+    l2.popBack();
+    try std.testing.expect(l2.head == null);
 }
