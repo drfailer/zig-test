@@ -14,10 +14,12 @@ pub fn main() !void {
     try l1.append(3);
     try l1.insert(5, 0);
     try l1.insert(6, 2);
-    try l1.add(4);
+    try l1.prepend(4);
     try l2.append(4);
     std.debug.print("{any}\n", .{l1});
     std.debug.print("{any}\n", .{l2});
 
     l1.print();
+    l2.popBack();
+    std.debug.print("{any}\n", .{l2});
 }

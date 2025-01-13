@@ -78,14 +78,14 @@ pub fn List(comptime T: type, comptime pool_size: usize) type {
         }
         pub fn deinit() !void {}
 
-        pub fn add(self: *Self, value: T) !void {
-            self.*.head = try pool.allocate(value, self.head);
+        pub fn prepend(self: *Self, value: T) !void {
+            self.head = try pool.allocate(value, self.head);
         }
 
         pub fn append(self: *Self, value: T) !void {
             var curr = &self.head;
 
-            while (curr.*) |c| curr = &c.*.next;
+            while (curr.*) |c| curr = &c.next;
             curr.* = try pool.allocate(value, null);
         }
 
@@ -95,18 +95,36 @@ pub fn List(comptime T: type, comptime pool_size: usize) type {
 
             while (curr.*) |c| {
                 if (curr_idx == idx) break;
-                curr = &c.*.next;
+                curr = &c.next;
                 curr_idx += 1;
             }
             curr.* = try pool.allocate(value, curr.*);
+        }
+
+        pub fn pop(self: *Self) void {
+            if (self.head) |head| {
+                std.debug.print("pop\n", .{});
+                self.head = head.next;
+                Self.pool.deallocate(head);
+            }
+        }
+
+        pub fn popBack(self: *Self) void {
+            var curr = &self.head;
+
+            if (curr.* != null) {
+                while (curr.*.?.next != null) curr = &curr.*.?.next;
+                Self.pool.deallocate(curr.*.?);
+                curr.* = null;
+            }
         }
 
         pub fn print(self: *const Self) void {
             var curr = &self.head;
             std.debug.print("[ ", .{});
             while (curr.*) |c| {
-                std.debug.print("{}, ", .{c.*.value});
-                curr = &c.*.next;
+                std.debug.print("{}, ", .{c.value});
+                curr = &c.next;
             }
             std.debug.print("]\n", .{});
         }
