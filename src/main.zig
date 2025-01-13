@@ -4,6 +4,7 @@ const list = @import("list.zig");
 const ListInt = list.List(i32, 100);
 
 pub fn main() !void {
+    ListInt.init();
     var l1 = ListInt{};
     var l2 = ListInt{};
 
